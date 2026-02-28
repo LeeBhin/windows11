@@ -54,4 +54,6 @@ export const useDesktopStore = create((set) => ({
   toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
 
   network: { isConnected: true, type: 'wifi' },
+
+  _skipNextPanelAnim: false,
 }))

@@ -1,38 +1,47 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useDesktopStore } from '../../store/useDesktopStore'
 import { useAnimatedPanel } from '../../hooks/useAnimatedPanel'
 
 const recentApps = [
-  { id: 'edge',     name: 'Microsoft Edge',    sub: '앱', icon: '🌐' },
-  { id: 'vscode',   name: 'Visual Studio Code', sub: '앱', icon: '💻' },
-  { id: 'chrome',   name: 'Google Chrome',     sub: '앱', icon: '🟡' },
-  { id: 'settings', name: '설정',              sub: '앱', icon: '⚙️' },
-  { id: 'notepad',  name: '메모장',            sub: '앱', icon: '📝' },
-  { id: 'calc',     name: '계산기',            sub: '앱', icon: '🧮' },
-  { id: 'photos',   name: '사진',              sub: '앱', icon: '🖼️' },
-  { id: 'store',    name: 'Microsoft Store',   sub: '앱', icon: '🛍️' },
+  { id: 'utable', name: 'uTable',   icon: '📱' },
+  { id: 'kakao',  name: '카카오톡', icon: '💬' },
 ]
 
-const quickTags = ['설정', '앱', '파일', '이미지', '웹', '음악']
+const quickTags = [
+  '포커스 설정', '소리 설정', 'Bluetooth 및 장치',
+  '디스플레이 설정', '색 설정', '검색 설정',
+]
 
 const topApps = [
-  { id: 'edge',    name: 'Edge',    icon: '🌐' },
-  { id: 'chrome',  name: 'Chrome',  icon: '🟡' },
-  { id: 'vscode',  name: 'VS Code', icon: '💻' },
-  { id: 'word',    name: 'Word',    icon: '📘' },
-  { id: 'excel',   name: 'Excel',   icon: '📗' },
-  { id: 'discord', name: 'Discord', icon: '💬' },
+  { id: 'gamebar',  name: 'Game Bar',           icon: '🎮' },
+  { id: 'whale',    name: '네이버 웨일',        icon: '🌊' },
+  { id: 'explorer', name: '파일 탐색기',        icon: '📁' },
+  { id: 'vscode',   name: 'Visual Studio Code', icon: '💻' },
+  { id: 'discord',  name: 'Discord',            icon: '💬' },
+  { id: 'snipping', name: 'Snipping Tool',      icon: '✂️' },
 ]
 
 export default function SearchPanel() {
   const isOpen = useDesktopStore((s) => s.panels.searchPanel)
+  const skipAnim = useDesktopStore((s) => s._skipNextPanelAnim)
   const phase  = useAnimatedPanel(isOpen)
   const [query, setQuery] = useState('')
+
+  useEffect(() => {
+    if (skipAnim && phase === 'open') {
+      useDesktopStore.setState({ _skipNextPanelAnim: false })
+    }
+  }, [skipAnim, phase])
 
   const animStyle = (() => {
     const TX = (y) => `translateX(-50%) translateY(${y})`
     const EASE_OUT = 'transform 0.2s ease'
     const EASE_IN  = 'transform 0.2s cubic-bezier(0.88, 0, 0.88, 1)'
+
+    if (skipAnim && (phase === 'entering' || phase === 'open')) {
+      return { transform: TX('0'), transition: 'none', pointerEvents: 'auto' }
+    }
+
     if (phase === 'closed')   return { transform: TX('calc(100% + 60px)'), transition: 'none',    pointerEvents: 'none' }
     if (phase === 'open')     return { transform: TX('0'),                 transition: 'none',    pointerEvents: 'auto' }
     if (phase === 'entering') return { transform: TX('0'),                 transition: EASE_OUT,  pointerEvents: 'auto' }
@@ -41,37 +50,47 @@ export default function SearchPanel() {
 
   return (
     <div
-      className="fixed left-1/2 rounded-xl shadow-2xl overflow-hidden"
+      className="fixed left-1/2 rounded-xl overflow-hidden flex flex-col"
       style={{
         bottom: '52px',
-        width: '680px',
-        background: 'rgba(243,243,243,0.97)',
+        width: '780px',
+        height: '780px',
+        background: 'rgba(244,243,240,0.97)',
         backdropFilter: 'blur(40px)',
-        border: '1px solid rgba(0,0,0,0.07)',
+        border: '1px solid #9c8b8b80',
+        boxShadow: '0 6px 10px -1px #0000004d',
         zIndex: 50,
         ...animStyle,
       }}
       onMouseDown={(e) => e.stopPropagation()}
     >
       {/* 검색 바 */}
-      <div className="px-5 pt-4 pb-3">
+      <div className="px-6 pt-5 pb-3">
         <div
-          className="flex items-center gap-3 rounded-full px-4 py-2.5"
+          className="flex items-center gap-3 rounded-full px-4 py-2"
           style={{
             background: 'rgba(255,255,255,0.9)',
-            border: '1px solid rgba(0,0,0,0.1)',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+            border: '1px solid rgba(0,0,0,0.08)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <svg viewBox="0 0 292 300" width="15" height="15" className="flex-shrink-0">
+            <path
+              fill="#0078D4"
+              fillRule="evenodd"
+              d="M254 128A126 126 0 1 1 2 128A126 126 0 1 1 254 128ZM222 128A94 94 0 1 0 34 128A94 94 0 1 0 222 128Z"
+            />
+            <g transform="rotate(45 206 206)">
+              <rect x="198" y="207.5" width="118" height="37" rx="18.5" fill="#0078D4" />
+            </g>
           </svg>
           <input
-            className="bg-transparent text-sm outline-none flex-1"
+            className="bg-transparent text-[13px] outline-none flex-1"
             style={{ color: '#1a1a1a' }}
             placeholder="검색"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            autoFocus
           />
           {query && (
             <button onClick={() => setQuery('')} className="text-gray-400 hover:text-gray-700 transition-colors">
@@ -84,57 +103,77 @@ export default function SearchPanel() {
       </div>
 
       {/* 두 컬럼 본문 */}
-      <div className="flex" style={{ minHeight: '320px' }}>
-        {/* 왼쪽: 최근 앱 목록 */}
-        <div className="flex-1 px-3 pb-4 border-r border-black/[0.06]">
-          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-2 py-2">최근</p>
+      <div className="flex flex-1 overflow-hidden">
+        {/* 왼쪽: 최근 */}
+        <div className="pb-4 pl-6 pr-3 flex-shrink-0" style={{ width: '210px' }}>
+          <p className="text-[13px] font-semibold text-gray-700 px-2 py-2">최근</p>
           <div className="flex flex-col gap-0.5">
             {recentApps.map((app) => (
               <button
                 key={app.id}
-                className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-black/[0.06] transition-colors text-left w-full"
+                className="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-black/[0.05] transition-colors text-left w-full"
               >
-                <span className="text-xl flex-shrink-0 w-7 text-center">{app.icon}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-gray-800 truncate leading-tight">{app.name}</p>
-                  <p className="text-xs text-gray-400">{app.sub}</p>
-                </div>
-                <svg className="flex-shrink-0 text-gray-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
+                <span className="text-[22px] flex-shrink-0 w-7 text-center">{app.icon}</span>
+                <span className="text-[13px] text-gray-800">{app.name}</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* 오른쪽: 빠른 검색 + 최고의 앱 */}
-        <div className="px-4 pb-4" style={{ width: '210px' }}>
-          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-1 py-2">빠른 검색</p>
-          <div className="flex flex-wrap gap-1.5 px-1 mb-4">
-            {quickTags.map((tag) => (
-              <button
-                key={tag}
-                className="px-2.5 py-1 text-xs rounded-full hover:bg-black/[0.06] transition-colors"
-                style={{
-                  background: 'rgba(255,255,255,0.85)',
-                  border: '1px solid rgba(0,0,0,0.1)',
-                  color: '#444',
-                }}
+        <div className="flex-1 px-5 pb-4 border-l border-black/[0.05]">
+          {/* 빠른 검색 헤더 */}
+          <div className="flex items-center justify-between py-2 mb-2">
+            <p className="text-[13px] font-semibold text-gray-700">빠른 검색</p>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-white text-[10px] font-bold"
+                style={{ background: '#0078D4' }}
               >
-                {tag}
+                B
+              </span>
+              <button className="w-[22px] h-[22px] rounded-full hover:bg-black/[0.06] flex items-center justify-center text-gray-400 text-[11px] font-bold">
+                ···
               </button>
-            ))}
+            </div>
           </div>
 
-          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-1 pb-2">최고의 앱</p>
-          <div className="grid grid-cols-3 gap-1">
+          {/* 빠른 검색 태그 */}
+          <div
+            className="rounded-xl p-3.5 mb-5"
+            style={{ background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(0,0,0,0.04)' }}
+          >
+            <div className="flex flex-wrap gap-2">
+              {quickTags.map((tag) => (
+                <button
+                  key={tag}
+                  className="px-3 py-1.5 text-[12px] rounded-full hover:bg-white transition-colors"
+                  style={{
+                    background: 'rgba(255,255,255,0.8)',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    color: '#333',
+                  }}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 최고의 앱 */}
+          <p className="text-[13px] font-semibold text-gray-700 mb-3">최고의 앱</p>
+          <div className="grid grid-cols-3 gap-3">
             {topApps.map((app) => (
               <button
                 key={app.id}
-                className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-black/[0.06] transition-colors"
+                className="flex flex-col items-center justify-center gap-2.5 py-5 px-3 rounded-xl hover:bg-white/90 transition-colors"
+                style={{
+                  background: 'rgba(255,255,255,0.5)',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                }}
               >
-                <span className="text-xl leading-none">{app.icon}</span>
-                <span className="text-[10px] text-gray-700 text-center leading-tight w-full truncate">{app.name}</span>
+                <span className="text-[34px] leading-none">{app.icon}</span>
+                <span className="text-[12px] text-gray-700 text-center leading-tight w-full truncate">{app.name}</span>
               </button>
             ))}
           </div>

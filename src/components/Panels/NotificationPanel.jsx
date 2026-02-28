@@ -6,7 +6,7 @@ export default function NotificationPanel() {
 
   return (
     <div
-      className="fixed rounded-2xl shadow-2xl overflow-hidden transition-all duration-150 flex flex-col"
+      className="fixed rounded-[8px] shadow-2xl overflow-hidden transition-all duration-150 flex flex-col"
       style={{
         bottom: '52px',
         right: '376px', // CalendarPanel(360) + gap(8) + margin(8)

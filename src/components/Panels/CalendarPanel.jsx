@@ -49,7 +49,7 @@ export default function CalendarPanel() {
 
   return (
     <div
-      className="fixed rounded-2xl shadow-2xl overflow-hidden transition-all duration-150"
+      className="fixed rounded-[8px] shadow-2xl overflow-hidden transition-all duration-150"
       style={{
         bottom: '52px',
         right: '8px',

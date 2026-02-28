@@ -66,7 +66,7 @@ export default function ActionCenter() {
 
   return (
     <div
-      className="fixed rounded-xl shadow-2xl overflow-hidden"
+      className="fixed rounded-[8px] shadow-2xl overflow-hidden"
       style={{
         bottom: '52px',
         right: '8px',

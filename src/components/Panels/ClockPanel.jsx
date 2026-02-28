@@ -22,7 +22,7 @@ const PANEL_STYLE = {
   background: 'rgba(240,240,240,0.97)',
   backdropFilter: 'blur(40px)',
   border: '1px solid rgba(0,0,0,0.07)',
-  borderRadius: '10px',
+  borderRadius: '8px',
   width: '360px',
   overflow: 'hidden',
 }

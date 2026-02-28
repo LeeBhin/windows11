@@ -28,7 +28,7 @@ export default function HiddenIconsTray() {
 
   return (
     <div
-      className="fixed rounded-xl shadow-xl"
+      className="fixed rounded-[8px] shadow-xl"
       style={{
         bottom: '56px',
         right: '120px',

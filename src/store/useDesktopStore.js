@@ -56,4 +56,7 @@ export const useDesktopStore = create((set) => ({
   network: { isConnected: true, type: 'wifi' },
 
   _skipNextPanelAnim: false,
+
+  searchAnimTick: 0,
+  triggerSearchAnim: () => set((s) => ({ searchAnimTick: s.searchAnimTick + 1 })),
 }))

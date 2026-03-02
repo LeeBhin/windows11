@@ -27,32 +27,40 @@ function drawArc(ctx, angle) {
   ctx.fill()
 }
 
+function runArc(canvasRef) {
+  if (!canvasRef.current) return
+  const ctx = canvasRef.current.getContext('2d')
+  const FROM = 63 * Math.PI / 180
+  const TO = 243 * Math.PI / 180
+  const DUR = 200
+  const t0 = performance.now()
+  let raf
+  function frame(now) {
+    const p = Math.min((now - t0) / DUR, 1)
+    const ease = 1 - (1 - p) * (1 - p)
+    drawArc(ctx, FROM + (TO - FROM) * ease)
+    if (p < 1) raf = requestAnimationFrame(frame)
+  }
+  raf = requestAnimationFrame(frame)
+  return () => cancelAnimationFrame(raf)
+}
+
 export default function SearchButton() {
   const isActive = useDesktopStore((s) => s.panels.searchPanel)
   const togglePanel = useDesktopStore((s) => s.togglePanel)
+  const searchAnimTick = useDesktopStore((s) => s.searchAnimTick)
   const canvasRef = useRef(null)
   const color = isActive ? '#0071D1' : '#181817'
 
   useEffect(() => {
-    if (!isActive || !canvasRef.current) return
-    const ctx = canvasRef.current.getContext('2d')
-
-    const FROM = 63 * Math.PI / 180
-    const TO = 243 * Math.PI / 180
-    const DUR = 200
-    const t0 = performance.now()
-    let raf
-
-    function frame(now) {
-      const p = Math.min((now - t0) / DUR, 1)
-      const ease = 1 - (1 - p) * (1 - p)
-      drawArc(ctx, FROM + (TO - FROM) * ease)
-      if (p < 1) raf = requestAnimationFrame(frame)
-    }
-
-    raf = requestAnimationFrame(frame)
-    return () => cancelAnimationFrame(raf)
+    if (!isActive) return
+    return runArc(canvasRef)
   }, [isActive])
+
+  useEffect(() => {
+    if (!isActive || searchAnimTick === 0) return
+    return runArc(canvasRef)
+  }, [isActive, searchAnimTick])
 
   return (
     <TaskbarButton
@@ -61,7 +69,7 @@ export default function SearchButton() {
       className="w-10 h-10"
       tooltip="검색"
     >
-      <svg viewBox="0 0 292 300" width={24.5} height={24.5}>
+      <svg viewBox="0 0 292 300" width={isActive ? 24.5 : 23} height={isActive ? 24.5 : 23} style={{ overflow: 'visible' }}>
         <path
           fill={color}
           fillRule="evenodd"

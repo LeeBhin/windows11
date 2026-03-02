@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDesktopStore } from "../../store/useDesktopStore";
 import { useAnimatedPanel } from "../../hooks/useAnimatedPanel";
+import SearchInput from "./SearchInput";
+
+const appIcon = (name) =>
+  new URL(`../../assets/icons/applications/${name}.ico`, import.meta.url).href;
 
 const recentApps = [
-  { id: "utable", name: "uTable", icon: "📱" },
-  { id: "kakao", name: "카카오톡", icon: "💬" },
+  { id: "weather", name: "날씨", icon: "weather" },
+  { id: "skype", name: "Skype", icon: "skype" },
 ];
 
 const quickTags = [
@@ -17,12 +21,12 @@ const quickTags = [
 ];
 
 const topApps = [
-  { id: "gamebar", name: "Game Bar", icon: "🎮" },
-  { id: "whale", name: "네이버 웨일", icon: "🌊" },
-  { id: "explorer", name: "파일 탐색기", icon: "📁" },
-  { id: "vscode", name: "Visual Studio Code", icon: "💻" },
-  { id: "discord", name: "Discord", icon: "💬" },
-  { id: "snipping", name: "Snipping Tool", icon: "✂️" },
+  { id: "gamebar", name: "Game Bar", icon: "gamebar" },
+  { id: "edge", name: "Edge", icon: "edge" },
+  { id: "terminal", name: "Terminal", icon: "terminal" },
+  { id: "vscode", name: "Visual Studio Code", icon: "visualcode" },
+  { id: "teams", name: "Teams", icon: "teams" },
+  { id: "snipping", name: "Snipping Tool", icon: "snippingtool" },
 ];
 
 function calcPanelSize(screenW) {
@@ -36,11 +40,15 @@ function calcPanelSize(screenW) {
 export default function SearchPanel() {
   const isOpen = useDesktopStore((s) => s.panels.searchPanel);
   const skipAnim = useDesktopStore((s) => s._skipNextPanelAnim);
+  const triggerSearchAnim = useDesktopStore((s) => s.triggerSearchAnim);
   const phase = useAnimatedPanel(isOpen);
   const [query, setQuery] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
   const [panelSize, setPanelSize] = useState(() =>
     calcPanelSize(window.innerWidth),
   );
+  const inputRef = useRef(null);
+  const wasBlurredRef = useRef(false);
 
   useEffect(() => {
     const update = () => setPanelSize(calcPanelSize(window.innerWidth));
@@ -53,6 +61,29 @@ export default function SearchPanel() {
       useDesktopStore.setState({ _skipNextPanelAnim: false });
     }
   }, [skipAnim, phase]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      inputRef.current?.blur();
+      wasBlurredRef.current = false;
+      return;
+    }
+    const t = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(t);
+  }, [isOpen]);
+
+  const handleInputFocus = () => {
+    setInputFocused(true);
+    if (wasBlurredRef.current) {
+      wasBlurredRef.current = false;
+      triggerSearchAnim();
+    }
+  };
+
+  const handleInputBlur = () => {
+    setInputFocused(false);
+    wasBlurredRef.current = true;
+  };
 
   const animStyle = (() => {
     const TX = (y) => `translateX(-50%) translateY(${y})`;
@@ -107,64 +138,28 @@ export default function SearchPanel() {
       >
         {/* 검색 바 */}
         <div className="px-6 pt-5 pb-3">
-          <div
-            className="flex items-center gap-3 rounded-full px-4 py-2"
-            style={{
-              background: "rgba(255,255,255,0.9)",
-              border: "1px solid rgba(0,0,0,0.08)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-            }}
-          >
-            <svg
-              viewBox="0 0 292 300"
-              width="15"
-              height="15"
-              className="flex-shrink-0"
-            >
-              <path
-                fill="#0078D4"
-                fillRule="evenodd"
-                d="M254 128A126 126 0 1 1 2 128A126 126 0 1 1 254 128ZM222 128A94 94 0 1 0 34 128A94 94 0 1 0 222 128Z"
-              />
-              <g transform="rotate(45 206 206)">
-                <rect
-                  x="198"
-                  y="207.5"
-                  width="118"
-                  height="37"
-                  rx="18.5"
-                  fill="#0078D4"
-                />
-              </g>
-            </svg>
-            <input
-              className="bg-transparent text-[13px] outline-none flex-1"
-              style={{ color: "#1a1a1a" }}
-              placeholder="검색"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              autoFocus
-            />
-            {query && (
-              <button
-                onClick={() => setQuery("")}
-                className="text-gray-400 hover:text-gray-700 transition-colors"
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
+          <SearchInput
+            placeholder="검색"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            isFocused={inputFocused}
+            inputRef={inputRef}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            rightEl={
+              query && (
+                <button
+                  onClick={() => setQuery("")}
+                  className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0"
                 >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            )}
-          </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )
+            }
+          />
         </div>
 
         {/* 두 컬럼 본문 */}
@@ -183,9 +178,7 @@ export default function SearchPanel() {
                   key={app.id}
                   className="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-black/[0.05] transition-colors text-left w-full"
                 >
-                  <span className="text-[22px] flex-shrink-0 w-7 text-center">
-                    {app.icon}
-                  </span>
+                  <img src={appIcon(app.icon)} className="w-7 h-7 object-contain flex-shrink-0" alt={app.name} />
                   <span className="text-[13px] text-gray-800">{app.name}</span>
                 </button>
               ))}
@@ -251,7 +244,7 @@ export default function SearchPanel() {
                     border: "1px solid rgba(0,0,0,0.06)",
                   }}
                 >
-                  <span className="text-[34px] leading-none">{app.icon}</span>
+                  <img src={appIcon(app.icon)} className="w-[34px] h-[34px] object-contain" alt={app.name} />
                   <span className="text-[12px] text-gray-700 text-center leading-tight w-full truncate">
                     {app.name}
                   </span>

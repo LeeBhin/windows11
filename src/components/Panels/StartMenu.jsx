@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDesktopStore } from "../../store/useDesktopStore";
 import { useAnimatedPanel } from "../../hooks/useAnimatedPanel";
+import SearchInput from "./SearchInput";
+
+const appIcon = (name) =>
+  new URL(`../../assets/icons/applications/${name}.ico`, import.meta.url).href;
 
 function calcMenuSize(screenW) {
   // 16인치(1707px) → 642×720 / 24인치(1920px) → 830×850
@@ -12,38 +16,38 @@ function calcMenuSize(screenW) {
 }72
 
 const pinnedApps = [
-  { id: "edge", name: "Edge", icon: "🌐" },
-  { id: "word", name: "Word", icon: "📘" },
-  { id: "excel", name: "Excel", icon: "📗" },
-  { id: "powerpoint", name: "PowerPoint", icon: "📙" },
-  { id: "copilot", name: "Microsoft 365 Copilot", icon: "🤖" },
-  { id: "outlook", name: "Outlook", icon: "📬" },
-  { id: "store", name: "Microsoft Store", icon: "🛍️" },
-  { id: "photos", name: "Photos", icon: "🖼️" },
-  { id: "settings", name: "설정", icon: "⚙️" },
-  { id: "solitaire", name: "Solitaire & Casual Games", icon: "♠️" },
-  { id: "disney", name: "Disney+", icon: "🏰" },
-  { id: "whatsapp", name: "WhatsApp", icon: "📱" },
-  { id: "messenger", name: "Messenger", icon: "💬" },
-  { id: "calc", name: "Calculator", icon: "🧮" },
-  { id: "clock", name: "Clock", icon: "🕐" },
-  { id: "notepad", name: "Notepad", icon: "📝" },
+  { id: "edge", name: "Edge", icon: "edge" },
+  { id: "word", name: "Word", icon: "word" },
+  { id: "excel", name: "Excel", icon: "excel" },
+  { id: "powerpoint", name: "PowerPoint", icon: "powerpoint" },
+  { id: "copilot", name: "Copilot", icon: "assist" },
+  { id: "outlook", name: "Outlook", icon: "outlook" },
+  { id: "store", name: "Microsoft Store", icon: "store" },
+  { id: "photos", name: "Photos", icon: "photos" },
+  { id: "settings", name: "설정", icon: "settings" },
+  { id: "solitaire", name: "Solitaire", icon: "solitaire" },
+  { id: "movies", name: "Movies & TV", icon: "movies" },
+  { id: "skype", name: "Skype", icon: "skype" },
+  { id: "teams", name: "Teams", icon: "teams" },
+  { id: "calc", name: "Calculator", icon: "calculator" },
+  { id: "clock", name: "Alarm & Clock", icon: "alarm" },
+  { id: "notepad", name: "Notepad", icon: "notepad" },
 ];
 
 const recommended = [
-  { name: "uTable", icon: "📱", sub: "최근 추가 항목" },
-  { name: "Claude", icon: "🤖", sub: "최근 추가 항목" },
-  { name: "task_view", icon: "📋", sub: "3시간 전" },
-  { name: "Recording 2026-02-26 011131", icon: "🎙️", sub: "21시간 전" },
-  { name: "Screenshot 2026-02-26 0109...", icon: "📸", sub: "21시간 전" },
-  { name: "start", icon: "🚀", sub: "22시간 전" },
+  { name: "Snipping Tool", icon: "snippingtool", sub: "최근 추가 항목" },
+  { name: "Cortana", icon: "cortana", sub: "최근 추가 항목" },
+  { name: "Task View", icon: "taskview", sub: "3시간 전" },
+  { name: "Voice Recorder", icon: "voice", sub: "21시간 전" },
+  { name: "Snip & Sketch", icon: "snipandsketch", sub: "21시간 전" },
+  { name: "Start", icon: "start", sub: "22시간 전" },
 ];
 
 const appCategories = [
-  { name: "기타", icons: ["🌐", "📸", "♠️", "🎭"] },
-  { name: "개발자 도구", icons: ["💻", "📄", "🔧", "🎨"] },
-  { name: "유틸리티 및 도구", icons: ["👥", "⚙️", "📊", "🔒"] },
-  { name: "생산성", icons: ["📁", "📝", "💬", "🏗️"] },
+  { name: "기타", icons: ["edge", "photos", "solitaire", "movies"] },
+  { name: "개발자 도구", icons: ["terminal", "notepad", "visualcode", "visualstudio"] },
+  { name: "유틸리티 및 도구", icons: ["people", "settings", "tasks", "protection"] },
+  { name: "생산성", icons: ["onedrive", "stickynotes", "teams", "project"] },
 ];
 
 export default function StartMenu() {
@@ -51,9 +55,12 @@ export default function StartMenu() {
   const togglePanel = useDesktopStore((s) => s.togglePanel);
   const phase = useAnimatedPanel(isOpen);
   const [skipExit, setSkipExit] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
   const [menuSize, setMenuSize] = useState(() =>
     calcMenuSize(window.innerWidth),
   );
+  const inputRef = useRef(null);
+  const justOpenedRef = useRef(false);
 
   useEffect(() => {
     const update = () => setMenuSize(calcMenuSize(window.innerWidth));
@@ -61,11 +68,37 @@ export default function StartMenu() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const handleSearchClick = () => {
+  useEffect(() => {
+    if (!isOpen) {
+      justOpenedRef.current = false;
+      inputRef.current?.blur();
+      return;
+    }
+    justOpenedRef.current = true;
+    const t = setTimeout(() => inputRef.current?.focus(), 120);
+    return () => clearTimeout(t);
+  }, [isOpen]);
+
+  const handleInputFocus = () => {
+    if (justOpenedRef.current) {
+      justOpenedRef.current = false;
+      setInputFocused(true);
+      return;
+    }
     setSkipExit(true);
     useDesktopStore.setState({ _skipNextPanelAnim: true });
     togglePanel("searchPanel");
     setTimeout(() => setSkipExit(false), 400);
+  };
+
+  const handleInputBlur = () => setInputFocused(false);
+
+  const handleKeyDown = (e) => {
+    if (e.key.length === 1) {
+      e.preventDefault();
+      useDesktopStore.setState({ _skipNextPanelAnim: true });
+      togglePanel("searchPanel");
+    }
   };
 
   const animStyle = (() => {
@@ -125,48 +158,14 @@ export default function StartMenu() {
       >
         {/* 검색 바 */}
         <div className="px-7 pt-5 pb-3">
-          <div
-            className="flex items-center gap-3 rounded-full px-4 py-2 cursor-pointer"
-            style={{
-              background: "rgba(255,255,255,0.9)",
-              border: "1px solid rgba(0,0,0,0.08)",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-            }}
-            onClick={handleSearchClick}
-          >
-            <svg
-              viewBox="0 0 292 300"
-              width="15"
-              height="15"
-              className="flex-shrink-0"
-            >
-              {/* 파란 링 */}
-              <path
-                fill="#0071D1"
-                fillRule="evenodd"
-                d="M254 128A126 126 0 1 1 2 128A126 126 0 1 1 254 128ZM222 128A94 94 0 1 0 34 128A94 94 0 1 0 222 128Z"
-              />
-              {/* 녹색 arc — SearchButton 애니메이션 완료 상태 (243°, 160° span) */}
-              <path
-                fill="rgba(91,226,115,0.85)"
-                d="M 69.9 14 A 128 128 0 0 1 221.6 215.3 L 195.3 190.7 A 92 92 0 0 0 86.2 46 Z"
-              />
-              {/* 파란 핸들 */}
-              <g transform="rotate(45 206 206)">
-                <rect
-                  x="198"
-                  y="207.5"
-                  width="118"
-                  height="37"
-                  rx="18.5"
-                  fill="#0071D1"
-                />
-              </g>
-            </svg>
-            <span className="text-[13px] text-gray-400 flex-1 select-none">
-              앱, 설정 및 문서 검색
-            </span>
-          </div>
+          <SearchInput
+            placeholder="앱, 설정 및 문서 검색"
+            isFocused={inputFocused}
+            inputRef={inputRef}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
+          />
         </div>
 
         {/* 스크롤 가능한 콘텐츠 영역 */}
@@ -204,7 +203,7 @@ export default function StartMenu() {
                   key={app.id}
                   className="flex flex-col items-center gap-1.5 py-3 px-1 rounded-lg transition-colors hover:bg-black/[0.05]"
                 >
-                  <span className="text-[30px] leading-none">{app.icon}</span>
+                  <img src={appIcon(app.icon)} className="w-[30px] h-[30px] object-contain" alt={app.name} />
                   <span
                     className="text-[11px] text-gray-600 text-center leading-tight w-full"
                     style={{
@@ -251,7 +250,7 @@ export default function StartMenu() {
                   key={item.name}
                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-black/[0.05] transition-colors text-left"
                 >
-                  <span className="text-[22px] flex-shrink-0">{item.icon}</span>
+                  <img src={appIcon(item.icon)} className="w-[22px] h-[22px] object-contain flex-shrink-0" alt={item.name} />
                   <div className="min-w-0">
                     <p className="text-[12px] text-gray-800 truncate font-medium leading-tight">
                       {item.name}
@@ -301,9 +300,7 @@ export default function StartMenu() {
                 >
                   <div className="grid grid-cols-2 gap-2 mb-2.5 justify-items-center">
                     {cat.icons.map((icon, i) => (
-                      <span key={i} className="text-[20px] leading-none">
-                        {icon}
-                      </span>
+                      <img key={i} src={appIcon(icon)} className="w-[20px] h-[20px] object-contain" alt="" />
                     ))}
                   </div>
                   <p className="text-[11px] text-gray-600 font-medium truncate">

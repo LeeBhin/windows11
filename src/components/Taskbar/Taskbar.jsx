@@ -43,7 +43,7 @@ export default function Taskbar() {
         <ClockWidget />
         <TaskbarTooltip tooltip="바탕 화면 보기">
           <div className="w-[5px] h-9 flex items-center justify-center group cursor-default">
-            <div className="w-px h-[15px] opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ background: '#7D848A' }} />
+            <div className="w-[2px] h-[15px] opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ background: '#a8afb4' }} />
           </div>
         </TaskbarTooltip>
       </div>

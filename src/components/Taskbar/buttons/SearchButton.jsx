@@ -69,7 +69,7 @@ export default function SearchButton() {
       className="w-10 h-10"
       tooltip="검색"
     >
-      <svg viewBox="0 0 292 300" width={isActive ? 24.5 : 23} height={isActive ? 24.5 : 23} style={{ overflow: 'visible' }}>
+      <svg viewBox="0 0 292 300" width={24.5} height={24.5} style={{ overflow: 'visible', transformOrigin: 'center', transform: isActive ? 'scale(1)' : `scale(${(23 / 24.5).toFixed(4)})`, transition: 'transform 0.15s ease' }}>
         <path
           fill={color}
           fillRule="evenodd"

@@ -29,11 +29,15 @@ const topApps = [
   { id: "snipping", name: "Snipping Tool", icon: "snippingtool" },
 ];
 
-function calcPanelSize(screenW) {
+function calcPanelSize(screenW, screenH) {
   const t = Math.max(0, Math.min(1, (screenW - 1707) / (1920 - 1707)));
+  const baseW = 777 + t * (833 - 777);
+  const baseH = 795 + t * (930 - 795);
+  const wFactor = screenW < 1707 ? screenW / 1707 : screenW > 1920 ? screenW / 1920 : 1;
+  const hFactor = Math.max(0.7, Math.min(1.25, screenH / 1080));
   return {
-    width: Math.round(777 + t * (833 - 777)),
-    height: Math.round(725 + t * (860 - 725)),
+    width: Math.max(420, Math.min(1100, Math.round(baseW * wFactor))),
+    height: Math.max(520, Math.min(960, Math.round(baseH * hFactor))),
   };
 }
 
@@ -41,17 +45,17 @@ export default function SearchPanel() {
   const isOpen = useDesktopStore((s) => s.panels.searchPanel);
   const skipAnim = useDesktopStore((s) => s._skipNextPanelAnim);
   const triggerSearchAnim = useDesktopStore((s) => s.triggerSearchAnim);
-  const phase = useAnimatedPanel(isOpen);
+  const phase = useAnimatedPanel(isOpen, 280, 220);
   const [query, setQuery] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const [panelSize, setPanelSize] = useState(() =>
-    calcPanelSize(window.innerWidth),
+    calcPanelSize(window.innerWidth, window.innerHeight),
   );
   const inputRef = useRef(null);
   const wasBlurredRef = useRef(false);
 
   useEffect(() => {
-    const update = () => setPanelSize(calcPanelSize(window.innerWidth));
+    const update = () => setPanelSize(calcPanelSize(window.innerWidth, window.innerHeight));
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
@@ -87,8 +91,8 @@ export default function SearchPanel() {
 
   const animStyle = (() => {
     const TX = (y) => `translateX(-50%) translateY(${y})`;
-    const EASE_OUT = "transform 0.2s ease";
-    const EASE_IN = "transform 0.2s cubic-bezier(0.88, 0, 0.88, 1)";
+    const EASE_OPEN = "transform 0.23s cubic-bezier(0.1, 0.9, 0.2, 1)";
+    const EASE_CLOSE = "transform 0.15s cubic-bezier(0.7, 0, 1, 0.5)";
 
     if (skipAnim && (phase === "entering" || phase === "open")) {
       return { transform: TX("0"), transition: "none", pointerEvents: "auto" };
@@ -97,20 +101,20 @@ export default function SearchPanel() {
     if (phase === "closed")
       return {
         transform: TX("calc(100% + 60px)"),
-        transition: "none",
+        transition: EASE_OPEN,
         pointerEvents: "none",
       };
     if (phase === "open")
-      return { transform: TX("0"), transition: "none", pointerEvents: "auto" };
+      return { transform: TX("0"), transition: EASE_OPEN, pointerEvents: "auto" };
     if (phase === "entering")
       return {
         transform: TX("0"),
-        transition: EASE_OUT,
+        transition: EASE_OPEN,
         pointerEvents: "auto",
       };
     return {
       transform: TX("calc(100% + 60px)"),
-      transition: EASE_IN,
+      transition: EASE_CLOSE,
       pointerEvents: "none",
     };
   })();
@@ -125,6 +129,7 @@ export default function SearchPanel() {
         border: "1.5px solid rgba(89, 80, 80, 0.35)",
         boxShadow: "0 8px 14px -2px rgba(0,0,0,0.22)",
         zIndex: 50,
+        willChange: "transform",
         ...animStyle,
       }}
       onMouseDown={(e) => e.stopPropagation()}
@@ -132,8 +137,8 @@ export default function SearchPanel() {
       <div
         className="rounded-[8px] overflow-hidden flex flex-col w-full h-full"
         style={{
-          background: "rgba(244,243,240,0.97)",
-          backdropFilter: "blur(40px)",
+          backdropFilter: 'blur(50px)',
+          backgroundColor: '#f0f7fce7',
         }}
       >
         {/* 검색 바 */}

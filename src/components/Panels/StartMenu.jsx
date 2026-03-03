@@ -6,14 +6,17 @@ import SearchInput from "./SearchInput";
 const appIcon = (name) =>
   new URL(`../../assets/icons/applications/${name}.ico`, import.meta.url).href;
 
-function calcMenuSize(screenW) {
-  // 16인치(1707px) → 642×720 / 24인치(1920px) → 830×850
+function calcMenuSize(screenW, screenH) {
   const t = Math.max(0, Math.min(1, (screenW - 1707) / (1920 - 1707)));
+  const baseW = 642 + t * (833 - 642);
+  const baseH = 790 + t * (930 - 790);
+  const wFactor = screenW < 1707 ? screenW / 1707 : screenW > 1920 ? screenW / 1920 : 1;
+  const hFactor = Math.max(0.7, Math.min(1.25, screenH / 1080));
   return {
-    width: Math.round(642 + t * (833 - 642)),
-    height: Math.round(720 + t * (860 - 720)),
+    width: Math.max(380, Math.min(1100, Math.round(baseW * wFactor))),
+    height: Math.max(520, Math.min(960, Math.round(baseH * hFactor))),
   };
-}72
+}
 
 const pinnedApps = [
   { id: "edge", name: "Edge", icon: "edge" },
@@ -53,17 +56,17 @@ const appCategories = [
 export default function StartMenu() {
   const isOpen = useDesktopStore((s) => s.panels.startMenu);
   const togglePanel = useDesktopStore((s) => s.togglePanel);
-  const phase = useAnimatedPanel(isOpen);
+  const phase = useAnimatedPanel(isOpen, 280, 220);
   const [skipExit, setSkipExit] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const [menuSize, setMenuSize] = useState(() =>
-    calcMenuSize(window.innerWidth),
+    calcMenuSize(window.innerWidth, window.innerHeight),
   );
   const inputRef = useRef(null);
   const justOpenedRef = useRef(false);
 
   useEffect(() => {
-    const update = () => setMenuSize(calcMenuSize(window.innerWidth));
+    const update = () => setMenuSize(calcMenuSize(window.innerWidth, window.innerHeight));
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
@@ -79,16 +82,25 @@ export default function StartMenu() {
     return () => clearTimeout(t);
   }, [isOpen]);
 
+  const openSearchPanel = () => {
+    setSkipExit(true);
+    useDesktopStore.setState({ _skipNextPanelAnim: true });
+    togglePanel("searchPanel");
+    setTimeout(() => setSkipExit(false), 400);
+  };
+
   const handleInputFocus = () => {
     if (justOpenedRef.current) {
       justOpenedRef.current = false;
       setInputFocused(true);
       return;
     }
-    setSkipExit(true);
-    useDesktopStore.setState({ _skipNextPanelAnim: true });
-    togglePanel("searchPanel");
-    setTimeout(() => setSkipExit(false), 400);
+    openSearchPanel();
+  };
+
+  // 이미 포커싱 상태에서 클릭 시 SearchPanel로 전환
+  const handleInputClick = () => {
+    if (inputFocused) openSearchPanel();
   };
 
   const handleInputBlur = () => setInputFocused(false);
@@ -103,8 +115,8 @@ export default function StartMenu() {
 
   const animStyle = (() => {
     const TX = (y) => `translateX(-50%) translateY(${y})`;
-    const EASE_OUT = "transform 0.2s ease";
-    const EASE_IN = "transform 0.2s cubic-bezier(0.88, 0, 0.88, 1)";
+    const EASE_OPEN = "transform 0.23s cubic-bezier(0.1, 0.9, 0.2, 1)";
+    const EASE_CLOSE = "transform 0.15s cubic-bezier(0.7, 0, 1, 0.5)";
 
     if (skipExit && (phase === "exiting" || phase === "closed")) {
       return {
@@ -117,20 +129,20 @@ export default function StartMenu() {
     if (phase === "closed")
       return {
         transform: TX("calc(100% + 60px)"),
-        transition: "none",
+        transition: EASE_OPEN,
         pointerEvents: "none",
       };
     if (phase === "open")
-      return { transform: TX("0"), transition: "none", pointerEvents: "auto" };
+      return { transform: TX("0"), transition: EASE_CLOSE, pointerEvents: "auto" };
     if (phase === "entering")
       return {
         transform: TX("0"),
-        transition: EASE_OUT,
+        transition: EASE_OPEN,
         pointerEvents: "auto",
       };
     return {
       transform: TX("calc(100% + 60px)"),
-      transition: EASE_IN,
+      transition: EASE_CLOSE,
       pointerEvents: "none",
     };
   })();
@@ -145,6 +157,7 @@ export default function StartMenu() {
         border: "1.5px solid rgba(89, 80, 80, 0.35)",
         boxShadow: "0 8px 14px -2px rgba(0,0,0,0.22)",
         zIndex: 50,
+        willChange: "transform",
         ...animStyle,
       }}
       onMouseDown={(e) => e.stopPropagation()}
@@ -152,12 +165,12 @@ export default function StartMenu() {
       <div
         className="rounded-[8px] overflow-hidden flex flex-col w-full h-full"
         style={{
-          background: "rgba(243,243,243,0.97)",
-          backdropFilter: "blur(40px)",
+          backdropFilter: 'blur(50px)',
+          backgroundColor: '#f0f7fce7',
         }}
       >
         {/* 검색 바 */}
-        <div className="px-7 pt-5 pb-3">
+        <div className="px-7 pt-5 pb-3" onClick={handleInputClick}>
           <SearchInput
             placeholder="앱, 설정 및 문서 검색"
             isFocused={inputFocused}
@@ -353,6 +366,6 @@ export default function StartMenu() {
           </button>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

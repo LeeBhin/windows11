@@ -1,4 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useLayoutEffect } from "react";
+
+const UNFOCUSED_S = 14 / 15;
+const FOCUSED_S = 1.0;
 
 const CX = 128, CY = 128;
 const OUTER_R = 128, INNER_R = 92;
@@ -38,6 +41,8 @@ export default function SearchInput({
 }) {
   const canvasRef = useRef(null);
   const svgRef = useRef(null);
+  const scaleRef = useRef(UNFOCUSED_S);
+  const rafRef = useRef(null);
 
   // 초록 arc 애니메이션
   useEffect(() => {
@@ -58,27 +63,56 @@ export default function SearchInput({
     return () => cancelAnimationFrame(raf);
   }, [isFocused]);
 
-  // scale 줄였다가 복구 애니메이션
+  // 초기 scale 설정 (paint 전)
+  useLayoutEffect(() => {
+    if (!svgRef.current) return;
+    svgRef.current.style.transform = `scale(${UNFOCUSED_S.toFixed(4)})`;
+    scaleRef.current = UNFOCUSED_S;
+  }, []);
+
+  // scale 애니메이션 — focus/unfocus 모두 RAF로 제어 (레이아웃 영향 없음)
   useEffect(() => {
-    if (!isFocused || !svgRef.current) return;
+    if (!svgRef.current) return;
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+
     const el = svgRef.current;
+    const startScale = scaleRef.current;
+
+    // unfocus인데 이미 목표 scale이면 스킵
+    if (!isFocused && Math.abs(startScale - UNFOCUSED_S) < 0.001) return;
+
     const DUR = 220;
     const t0 = performance.now();
-    let raf;
+
     function frame(now) {
       const p = Math.min((now - t0) / DUR, 1);
-      const scale = p < 0.35
-        ? 1 - 0.18 * (p / 0.35)
-        : 0.82 + 0.18 * ((p - 0.35) / 0.65);
+      let scale;
+      if (isFocused) {
+        // shrink 단계: startScale → startScale*0.82
+        // grow 단계: startScale*0.82 → FOCUSED_S (1.0) — 여기서 size-up 발생
+        if (p < 0.35) {
+          scale = startScale + (startScale * 0.91 - startScale) * (p / 0.35);
+        } else {
+          const minScale = startScale * 0.91;
+          scale = minScale + (FOCUSED_S - minScale) * ((p - 0.35) / 0.65);
+        }
+      } else {
+        const eased = 1 - (1 - p) * (1 - p);
+        scale = startScale + (UNFOCUSED_S - startScale) * eased;
+      }
+      scaleRef.current = scale;
       el.style.transform = `scale(${scale.toFixed(4)})`;
-      if (p < 1) raf = requestAnimationFrame(frame);
-      else el.style.transform = "";
+      if (p < 1) {
+        rafRef.current = requestAnimationFrame(frame);
+      } else {
+        const final = isFocused ? FOCUSED_S : UNFOCUSED_S;
+        scaleRef.current = final;
+        el.style.transform = `scale(${final.toFixed(4)})`;
+        rafRef.current = null;
+      }
     }
-    raf = requestAnimationFrame(frame);
-    return () => {
-      cancelAnimationFrame(raf);
-      if (svgRef.current) svgRef.current.style.transform = "";
-    };
+    rafRef.current = requestAnimationFrame(frame);
+    return () => { if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; } };
   }, [isFocused]);
 
   const color = isFocused ? "#0071D1" : "rgba(0,0,0,0.65)";
@@ -96,10 +130,10 @@ export default function SearchInput({
       <svg
         ref={svgRef}
         viewBox="0 0 292 300"
-        width={isFocused ? 15 : 14}
-        height={isFocused ? 15 : 14}
+        width={15}
+        height={15}
         className="flex-shrink-0"
-        style={{ overflow: "visible", transformBox: "fill-box", transformOrigin: "center" }}
+        style={{ overflow: "visible", transformOrigin: "center" }}
       >
         <path
           fill={color}

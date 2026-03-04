@@ -10,7 +10,7 @@ export default function TaskViewButton() {
     <TaskbarButton
       onClick={(e) => { e.stopPropagation(); togglePanel('taskView') }}
       isActive={isActive}
-      className="w-10 h-10"
+      className="w-9.5 h-9.5"
       tooltip="작업 보기"
     >
       <img src={taskViewIcon} alt="작업 보기" width={24.5} height={24.5} draggable={false} />

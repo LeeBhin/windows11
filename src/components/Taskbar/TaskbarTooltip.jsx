@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 
-export default function TaskbarTooltip({ children, tooltip, className = '' }) {
+export default function TaskbarTooltip({ children, tooltip, className = '', hideRef }) {
   const [visible, setVisible] = useState(false)
   const [show, setShow] = useState(false)
   const [pos, setPos] = useState({ left: 0, top: 0 })
@@ -38,15 +38,19 @@ export default function TaskbarTooltip({ children, tooltip, className = '' }) {
     clearTimeout(hideTimerRef.current)
   }
 
+  const hide = useCallback(() => {
+    clearTimeout(timerRef.current)
+    setShow(false)
+    hideTimerRef.current = setTimeout(() => setVisible(false), 200)
+  }, [])
+
   const handleEnter = () => {
     cancelHide()
     timerRef.current = setTimeout(() => setVisible(true), 400)
   }
 
   const handleLeave = () => {
-    clearTimeout(timerRef.current)
-    setShow(false)
-    hideTimerRef.current = setTimeout(() => setVisible(false), 200)
+    hide()
   }
 
   const handleTooltipEnter = () => {
@@ -59,6 +63,9 @@ export default function TaskbarTooltip({ children, tooltip, className = '' }) {
     hideTimerRef.current = setTimeout(() => setVisible(false), 200)
   }
 
+  // expose hide to parent via ref
+  if (hideRef) hideRef.current = hide
+
   if (!tooltip) return children
 
   return (
@@ -67,6 +74,7 @@ export default function TaskbarTooltip({ children, tooltip, className = '' }) {
       className={`relative ${className}`}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
+      {...(!hideRef && { onMouseDownCapture: hide })}
     >
       {children}
       {visible && createPortal(

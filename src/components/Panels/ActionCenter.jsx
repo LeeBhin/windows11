@@ -66,14 +66,15 @@ export default function ActionCenter() {
 
   return (
     <div
-      className="fixed rounded-[8px] shadow-2xl overflow-hidden"
+      className="fixed rounded-[8px] overflow-hidden"
       style={{
         bottom: '52px',
         right: '8px',
         width: '360px',
-        background: 'rgba(243,243,243,0.97)',
-        backdropFilter: 'blur(40px)',
-        border: '1px solid rgba(0,0,0,0.07)',
+        background: '#f0f7fce7',
+        backdropFilter: 'blur(50px)',
+        border: '1.5px solid rgba(89, 80, 80, 0.35)',
+        boxShadow: '0 8px 14px -2px rgba(0,0,0,0.22)',
         zIndex: 50,
         ...animStyle,
       }}

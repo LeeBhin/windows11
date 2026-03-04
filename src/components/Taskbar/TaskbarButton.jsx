@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import TaskbarTooltip from "./TaskbarTooltip";
 
 const BG_STYLE = {
-  backgroundColor: "#f2f6ff98",
-  boxShadow: "0 0 .3px .7px #d1daee",
-  border: "0.5px solid rgba(0,0,0,0.08)",
+  backgroundColor: "#f2f6ff75",
+  boxShadow: "0 0 .3px .5px #d1daeec9",
 };
 
 export default function TaskbarButton({
@@ -13,21 +12,24 @@ export default function TaskbarButton({
   tooltip,
   className = "",
   isActive = false,
+  noScale = false,
 }) {
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
+  const hideTooltipRef = useRef(null);
 
   const showBg = hovered || isActive;
   const bgOpacity = pressed ? 0.7 : showBg ? 1 : 0;
-  const iconScale = pressed ? "scale(0.77)" : "scale(1)";
+  const iconScale = !noScale && pressed ? "scale(0.77)" : "scale(1)";
 
   return (
-    <TaskbarTooltip tooltip={tooltip}>
+    <TaskbarTooltip tooltip={tooltip} hideRef={hideTooltipRef}>
       <button
         onClick={onClick}
         onMouseDown={(e) => {
           e.stopPropagation();
           setPressed(true);
+          hideTooltipRef.current?.();
         }}
         onMouseUp={() => setPressed(false)}
         onMouseEnter={() => setHovered(true)}

@@ -38,6 +38,7 @@ export default function SearchInput({
   readOnly,
   autoFocus,
   rightEl,
+  skipAnimation,
 }) {
   const canvasRef = useRef(null);
   const svgRef = useRef(null);
@@ -48,6 +49,10 @@ export default function SearchInput({
   useEffect(() => {
     if (!isFocused || !canvasRef.current) return;
     const ctx = canvasRef.current.getContext("2d");
+    if (skipAnimation) {
+      drawArc(ctx, 243 * Math.PI / 180);
+      return;
+    }
     const FROM = 63 * Math.PI / 180;
     const TO = 243 * Math.PI / 180;
     const DUR = 200;
@@ -74,6 +79,13 @@ export default function SearchInput({
   useEffect(() => {
     if (!svgRef.current) return;
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+
+    if (skipAnimation) {
+      const final = isFocused ? FOCUSED_S : UNFOCUSED_S;
+      scaleRef.current = final;
+      svgRef.current.style.transform = `scale(${final.toFixed(4)})`;
+      return;
+    }
 
     const el = svgRef.current;
     const startScale = scaleRef.current;

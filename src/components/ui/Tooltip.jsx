@@ -61,6 +61,7 @@ export default function Tooltip({ label, children }) {
       className="relative inline-flex"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
+      onMouseDownCapture={onLeave}
     >
       {children}
 

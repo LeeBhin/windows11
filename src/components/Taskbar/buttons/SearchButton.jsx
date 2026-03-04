@@ -66,7 +66,7 @@ export default function SearchButton() {
     <TaskbarButton
       onClick={(e) => { e.stopPropagation(); togglePanel('searchPanel') }}
       isActive={isActive}
-      className="w-10 h-10"
+      className="w-9.5 h-9.5"
       tooltip="검색"
     >
       <svg viewBox="0 0 292 300" width={24.5} height={24.5} style={{ overflow: 'visible', transformOrigin: 'center', transform: isActive ? 'scale(1)' : `scale(${(23 / 24.5).toFixed(4)})`, transition: 'transform 0.15s ease' }}>

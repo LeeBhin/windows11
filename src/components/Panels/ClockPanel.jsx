@@ -19,9 +19,10 @@ function getCalendarDays(year, month) {
 }
 
 const PANEL_STYLE = {
-  background: 'rgba(240,240,240,0.97)',
-  backdropFilter: 'blur(40px)',
-  border: '1px solid rgba(0,0,0,0.07)',
+  background: '#f0f7fce7',
+  backdropFilter: 'blur(50px)',
+  border: '1.5px solid rgba(89, 80, 80, 0.35)',
+  boxShadow: '0 8px 14px -2px rgba(0,0,0,0.22)',
   borderRadius: '8px',
   width: '360px',
   overflow: 'hidden',

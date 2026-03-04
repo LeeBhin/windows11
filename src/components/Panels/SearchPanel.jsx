@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useDesktopStore } from "../../store/useDesktopStore";
-import { useAnimatedPanel } from "../../hooks/useAnimatedPanel";
 import SearchInput from "./SearchInput";
 
 const appIcon = (name) =>
@@ -45,12 +45,12 @@ export default function SearchPanel() {
   const isOpen = useDesktopStore((s) => s.panels.searchPanel);
   const skipAnim = useDesktopStore((s) => s._skipNextPanelAnim);
   const triggerSearchAnim = useDesktopStore((s) => s.triggerSearchAnim);
-  const phase = useAnimatedPanel(isOpen, 280, 220);
   const [query, setQuery] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const [panelSize, setPanelSize] = useState(() =>
     calcPanelSize(window.innerWidth, window.innerHeight),
   );
+  const [backdropReady, setBackdropReady] = useState(false);
   const inputRef = useRef(null);
   const wasBlurredRef = useRef(false);
 
@@ -61,10 +61,17 @@ export default function SearchPanel() {
   }, []);
 
   useEffect(() => {
-    if (skipAnim && phase === "open") {
+    if (skipAnim && isOpen) {
       useDesktopStore.setState({ _skipNextPanelAnim: false });
     }
-  }, [skipAnim, phase]);
+  }, [skipAnim, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) { setBackdropReady(false); return; }
+    const delay = skipAnim ? 0 : 100;
+    const t = setTimeout(() => setBackdropReady(true), delay);
+    return () => clearTimeout(t);
+  }, [isOpen, skipAnim]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -89,38 +96,14 @@ export default function SearchPanel() {
     wasBlurredRef.current = true;
   };
 
-  const animStyle = (() => {
-    const TX = (y) => `translateX(-50%) translateY(${y})`;
-    const EASE_OPEN = "transform 0.23s cubic-bezier(0.1, 0.9, 0.2, 1)";
-    const EASE_CLOSE = "transform 0.15s cubic-bezier(0.7, 0, 1, 0.5)";
-
-    if (skipAnim && (phase === "entering" || phase === "open")) {
-      return { transform: TX("0"), transition: "none", pointerEvents: "auto" };
-    }
-
-    if (phase === "closed")
-      return {
-        transform: TX("calc(100% + 60px)"),
-        transition: EASE_OPEN,
-        pointerEvents: "none",
-      };
-    if (phase === "open")
-      return { transform: TX("0"), transition: EASE_OPEN, pointerEvents: "auto" };
-    if (phase === "entering")
-      return {
-        transform: TX("0"),
-        transition: EASE_OPEN,
-        pointerEvents: "auto",
-      };
-    return {
-      transform: TX("calc(100% + 60px)"),
-      transition: EASE_CLOSE,
-      pointerEvents: "none",
-    };
-  })();
+  const transition = skipAnim && isOpen
+    ? { duration: 0 }
+    : isOpen
+      ? { type: "tween", duration: 0.18, ease: [0.1, 0.9, 0.2, 1] }
+      : { type: "tween", duration: 0.18, ease: [0.7, 0, 1, 0.5] };
 
   return (
-    <div
+    <motion.div
       className="fixed left-1/2 rounded-[8px]"
       style={{
         bottom: "58px",
@@ -129,16 +112,19 @@ export default function SearchPanel() {
         border: "1.5px solid rgba(89, 80, 80, 0.35)",
         boxShadow: "0 8px 14px -2px rgba(0,0,0,0.22)",
         zIndex: 50,
-        willChange: "transform",
-        ...animStyle,
+        x: "-50%",
+        pointerEvents: isOpen ? "auto" : "none",
       }}
+      initial={false}
+      animate={{ y: isOpen ? 0 : panelSize.height + 60 }}
+      transition={transition}
       onMouseDown={(e) => e.stopPropagation()}
     >
       <div
         className="rounded-[8px] overflow-hidden flex flex-col w-full h-full"
         style={{
-          backdropFilter: 'blur(50px)',
-          backgroundColor: '#f0f7fce7',
+          backdropFilter: backdropReady ? 'blur(50px)' : 'none',
+          backgroundColor: backdropReady ? '#f0f7fce7' : '#D8E7FF',
         }}
       >
         {/* 검색 바 */}
@@ -259,6 +245,6 @@ export default function SearchPanel() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

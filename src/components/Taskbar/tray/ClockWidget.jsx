@@ -18,6 +18,7 @@ export default function ClockWidget() {
       onClick={(e) => { e.stopPropagation(); toggleCalendarView() }}
       className="pr-2 pl-2.5 h-9"
       tooltip={clockTooltip}
+      noScale
     >
       <div className="flex flex-col items-end justify-center gap-[6px]">
         <span className="text-[11.5px] font-medium leading-none" style={{ color: 'rgba(30,30,30,0.9)' }}>{time}</span>

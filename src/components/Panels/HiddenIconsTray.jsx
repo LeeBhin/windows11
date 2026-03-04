@@ -2,15 +2,15 @@ import { useDesktopStore } from '../../store/useDesktopStore'
 import { useAnimatedPanel } from '../../hooks/useAnimatedPanel'
 import Tooltip from '../ui/Tooltip'
 
+const appIcon = (name) =>
+  new URL(`../../assets/icons/applications/${name}.ico`, import.meta.url).href
+
 const hiddenIcons = [
-  { id: 'whale', name: 'NAVER Whale', emoji: '🌊' },
-  { id: 'zoom', name: 'Zoom', emoji: '📹' },
-  { id: 'discord', name: 'Discord', emoji: '💬' },
-  { id: 'intellij', name: 'IntelliJ IDEA', emoji: '🧠' },
-  { id: 'obs', name: 'OBS Studio', emoji: '🎙️' },
-  { id: 'defender', name: 'Windows 보안', emoji: '🛡️' },
-  { id: 'storage', name: 'USB 스토리지', emoji: '💾' },
-  { id: 'steam', name: 'Steam', emoji: '🎮' },
+  { id: 'protection', name: 'Windows 보안', icon: 'protection' },
+  { id: 'onedrive', name: 'OneDrive', icon: 'onedrive' },
+  { id: 'teams', name: 'Microsoft Teams', icon: 'teams' },
+  { id: 'yourphone', name: 'Phone Link', icon: 'yourphone' },
+  { id: 'terminal', name: 'Windows Terminal', icon: 'terminal' },
 ]
 
 export default function HiddenIconsTray() {
@@ -28,13 +28,14 @@ export default function HiddenIconsTray() {
 
   return (
     <div
-      className="fixed rounded-[8px] shadow-xl"
+      className="fixed rounded-[8px]"
       style={{
         bottom: '56px',
         right: '120px',
-        background: 'rgba(248, 248, 248, 0.97)',
-        backdropFilter: 'blur(40px)',
-        border: '1px solid rgba(0,0,0,0.08)',
+        background: '#f0f7fce7',
+        backdropFilter: 'blur(50px)',
+        border: '1.5px solid rgba(89, 80, 80, 0.35)',
+        boxShadow: '0 8px 14px -2px rgba(0,0,0,0.22)',
         zIndex: 50,
         padding: '10px',
         overflow: 'visible',
@@ -46,7 +47,7 @@ export default function HiddenIconsTray() {
         {hiddenIcons.map((icon) => (
           <Tooltip key={icon.id} label={icon.name}>
             <button className="flex items-center justify-center w-9 h-9 rounded-xl hover:bg-black/8 transition-colors">
-              <span className="text-xl leading-none">{icon.emoji}</span>
+              <img src={appIcon(icon.icon)} alt={icon.name} className="w-[18px] h-[18px] object-contain" draggable={false} />
             </button>
           </Tooltip>
         ))}

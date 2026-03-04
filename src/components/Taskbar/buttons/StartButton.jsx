@@ -10,7 +10,7 @@ export default function StartButton() {
     <TaskbarButton
       onClick={(e) => { e.stopPropagation(); togglePanel('startMenu') }}
       isActive={isActive}
-      className="w-10 h-10"
+      className="w-9.5 h-9.5"
       tooltip="시작"
     >
       <img src={startIcon} alt="시작" width={24.5} height={24.5} draggable={false} />

@@ -3,6 +3,16 @@ import { useDesktopStore } from '../../../store/useDesktopStore'
 import TaskbarButton from '../TaskbarButton'
 import TaskbarTooltip from '../TaskbarTooltip'
 
+function BatteryIcon({ color }) {
+  return (
+    <svg width="17" height="10" viewBox="0 0 19 11" fill="none">
+      <rect x="0.75" y="0.75" width="14.5" height="9.5" rx="1.8" stroke={color} strokeWidth="1.3" />
+      <rect x="15.5" y="3.2" width="2" height="4.6" rx="0.8" fill={color} />
+      <rect x="2.2" y="2.2" width="9.5" height="6.6" rx="0.8" fill={color} />
+    </svg>
+  )
+}
+
 export default function NetworkSpeakerButton() {
   const network = useDesktopStore((s) => s.network)
   const volume = useDesktopStore((s) => s.volume)
@@ -18,6 +28,7 @@ export default function NetworkSpeakerButton() {
     <TaskbarButton
       onClick={(e) => { e.stopPropagation(); togglePanel('actionCenter') }}
       className="h-9 px-2"
+      noScale
     >
       <div className="flex items-center gap-2">
         <TaskbarTooltip tooltip={networkTooltip}>
@@ -36,6 +47,11 @@ export default function NetworkSpeakerButton() {
                 ? <Volume2 size={15} color={iconColor} strokeWidth={2} />
                 : <Volume1 size={15} color={iconColor} strokeWidth={2} />
             }
+          </div>
+        </TaskbarTooltip>
+        <TaskbarTooltip tooltip="배터리: 72%">
+          <div className="flex items-center justify-center">
+            <BatteryIcon color={iconColor} />
           </div>
         </TaskbarTooltip>
       </div>

@@ -15,15 +15,15 @@ const hiddenIcons = [
 
 export default function HiddenIconsTray() {
   const isOpen = useDesktopStore((s) => s.panels.hiddenIcons)
-  const phase  = useAnimatedPanel(isOpen)
+  const phase = useAnimatedPanel(isOpen)
 
   const EASE_OUT = 'transform 0.2s ease'
-  const EASE_IN  = 'transform 0.2s cubic-bezier(0.88, 0, 0.88, 1)'
+  const EASE_IN = 'transform 0.2s cubic-bezier(0.88, 0, 0.88, 1)'
   const animStyle = (() => {
-    if (phase === 'closed')   return { transform: 'translateY(calc(100% + 60px))', transition: 'none',    pointerEvents: 'none' }
-    if (phase === 'open')     return { transform: 'translateY(0)',                 transition: 'none',    pointerEvents: 'auto' }
-    if (phase === 'entering') return { transform: 'translateY(0)',                 transition: EASE_OUT,  pointerEvents: 'auto' }
-    return                           { transform: 'translateY(calc(100% + 60px))', transition: EASE_IN,   pointerEvents: 'none' }
+    if (phase === 'closed') return { transform: 'translateY(calc(100% + 60px))', transition: 'none', pointerEvents: 'none' }
+    if (phase === 'open') return { transform: 'translateY(0)', transition: 'none', pointerEvents: 'auto' }
+    if (phase === 'entering') return { transform: 'translateY(0)', transition: EASE_OUT, pointerEvents: 'auto' }
+    return { transform: 'translateY(calc(100% + 60px))', transition: EASE_IN, pointerEvents: 'none' }
   })()
 
   return (
@@ -35,7 +35,7 @@ export default function HiddenIconsTray() {
         background: '#f0f7fce7',
         backdropFilter: 'blur(50px)',
         border: '1.5px solid rgba(89, 80, 80, 0.35)',
-        boxShadow: '0 8px 14px -2px rgba(0,0,0,0.22)',
+        boxShadow: 'rgba(0, 0, 0, 0.22) 0px 9px 13px -12px',
         zIndex: 50,
         padding: '10px',
         overflow: 'visible',

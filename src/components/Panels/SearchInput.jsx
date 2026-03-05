@@ -1,4 +1,4 @@
-import { useRef, useEffect, useLayoutEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
 
 const UNFOCUSED_S = 14 / 15;
 const FOCUSED_S = 1.0;
@@ -40,6 +40,7 @@ export default function SearchInput({
   rightEl,
   skipAnimation,
 }) {
+  const [hovered, setHovered] = useState(false);
   const canvasRef = useRef(null);
   const svgRef = useRef(null);
   const scaleRef = useRef(UNFOCUSED_S);
@@ -132,11 +133,13 @@ export default function SearchInput({
   return (
     <div
       className="flex items-center gap-2.5 rounded-full px-3.5"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        height: "34px",
-        background: "rgba(255,255,255,0.9)",
-        border: "1.5px solid #E0E4E5",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        height: "32px",
+        background: isFocused ? "rgba(255,255,255,0.9)" : hovered ? "rgba(245,245,245,0.88)" : "rgba(250,250,250,0.88)",
+        border: "1.5px solid #85accc48",
+        boxShadow: isFocused ? undefined : "0 3px 0 -2px #8d8d8d62",
       }}
     >
       <svg

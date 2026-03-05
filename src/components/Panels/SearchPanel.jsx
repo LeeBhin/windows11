@@ -123,14 +123,14 @@ export default function SearchPanel() {
       <div
         className="rounded-[8px] overflow-hidden flex flex-col w-full h-full"
         style={{
-          backdropFilter: backdropReady ? 'blur(50px)' : 'none',
+          backdropFilter: backdropReady ? 'blur(50px)' : 'blur(0px)',
           backgroundColor: backdropReady ? '#f0f7fce7' : '#D8E7FF',
+          transition: 'backdrop-filter 0.15s, background-color 0.15s',
         }}
       >
         {/* 검색 바 */}
         <div className="px-6 pt-5 pb-3">
           <SearchInput
-            placeholder="검색"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             isFocused={inputFocused}

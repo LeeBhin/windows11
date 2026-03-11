@@ -40,9 +40,12 @@ export const useDesktopStore = create((set) => ({
       ),
     })),
 
-  selectedIconId: null,
+  selectedIconIds: [],
+  tempSelectedIconIds: [],
   icons: desktopIcons,
-  selectIcon: (id) => set({ selectedIconId: id }),
+  selectIcon: (id) => set({ selectedIconIds: id ? [id] : [], tempSelectedIconIds: [] }),
+  selectIcons: (ids) => set({ selectedIconIds: ids, tempSelectedIconIds: [] }),
+  setTempSelectedIconIds: (ids) => set({ tempSelectedIconIds: ids }),
 
   language: 'ko',
   toggleLanguage: () =>

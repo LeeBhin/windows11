@@ -1,8 +1,7 @@
 import { useDesktopStore } from '../../store/useDesktopStore'
-import StartButton from './buttons/StartButton'
 import SearchButton from './buttons/SearchButton'
-import TaskViewButton from './buttons/TaskViewButton'
-import FileExplorerButton from './buttons/FileExplorerButton'
+import TaskbarIconButton from './buttons/TaskbarIconButton'
+import { taskbarIcons } from '../../data/taskbarIcons'
 import HiddenIconsButton from './tray/HiddenIconsButton'
 import LanguageIndicator from './tray/LanguageIndicator'
 import NetworkSpeakerButton from './tray/NetworkSpeakerButton'
@@ -28,10 +27,13 @@ export default function Taskbar() {
       {/* 중앙: 시작 ~ 파일탐색기 */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex items-center gap-[4.5px]">
-          <StartButton />
-          <SearchButton />
-          <TaskViewButton />
-          <FileExplorerButton />
+          {taskbarIcons.map((item) =>
+            item.id === 'searchPanel' ? (
+              <SearchButton key={item.id} />
+            ) : (
+              <TaskbarIconButton key={item.id} {...item} />
+            )
+          )}
         </div>
       </div>
 

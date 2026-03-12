@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
+import { PanelSurface } from '../ui/PanelShell'
 
 export default function TaskbarTooltip({ children, tooltip, className = '', hideRef }) {
   const [visible, setVisible] = useState(false)
@@ -63,8 +64,9 @@ export default function TaskbarTooltip({ children, tooltip, className = '', hide
     hideTimerRef.current = setTimeout(() => setVisible(false), 200)
   }
 
-  // expose hide to parent via ref
-  if (hideRef) hideRef.current = hide
+  useEffect(() => {
+    if (hideRef) hideRef.current = hide
+  }, [hide, hideRef])
 
   if (!tooltip) return children
 
@@ -82,18 +84,21 @@ export default function TaskbarTooltip({ children, tooltip, className = '', hide
           ref={tooltipRef}
           onMouseEnter={handleTooltipEnter}
           onMouseLeave={handleTooltipLeave}
-          className="fixed px-2.5 py-1.5 rounded-[4px] whitespace-pre text-[11.5px] leading-[1.5] z-[200] transition-opacity duration-200"
+          className="fixed z-[200] transition-opacity duration-200"
           style={{
-            background: 'rgba(243, 243, 243, 0.98)',
-            border: '0.5px solid rgba(0,0,0,0.3)',
-            boxShadow: '0px 3px 6px rgba(0,0,0,0.08), -1px 1.5px 2px rgba(0,0,0,0.05)',
-            color: 'rgba(30,30,30,0.9)',
             left: pos.left,
             top: pos.top,
             opacity: show ? 1 : 0,
           }}
         >
-          {tooltip}
+          <PanelSurface>
+            <div
+              className="px-2.5 py-1.5 whitespace-pre text-[11.5px] leading-[1.5]"
+              style={{ color: 'rgba(30,30,30,0.9)' }}
+            >
+              {tooltip}
+            </div>
+          </PanelSurface>
         </div>,
         document.body
       )}

@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
 import TaskbarTooltip from "./TaskbarTooltip";
+import { panelBorder } from "../ui/PanelShell";
 
 const BG_STYLE = {
   backgroundColor: "#f2f6ff75",
+  border: panelBorder(0.05),
   boxShadow: "0 0 .3px .5px #d1daeec9",
 };
 

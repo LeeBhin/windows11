@@ -1,0 +1,63 @@
+export const pinnedApps = [
+  { id: "edge", name: "Edge", icon: "edge" },
+  { id: "word", name: "Word", icon: "word" },
+  { id: "excel", name: "Excel", icon: "excel" },
+  { id: "powerpoint", name: "PowerPoint", icon: "powerpoint" },
+  { id: "copilot", name: "Copilot", icon: "assist" },
+  { id: "outlook", name: "Outlook", icon: "outlook" },
+  { id: "store", name: "Microsoft Store", icon: "store" },
+  { id: "photos", name: "Photos", icon: "photos" },
+  { id: "settings", name: "설정", icon: "settings" },
+  { id: "solitaire", name: "Solitaire", icon: "solitaire" },
+  { id: "movies", name: "Movies & TV", icon: "movies" },
+  { id: "skype", name: "Skype", icon: "skype" },
+  { id: "teams", name: "Teams", icon: "teams" },
+  { id: "calc", name: "Calculator", icon: "calculator" },
+  { id: "clock", name: "Alarm & Clock", icon: "alarm" },
+  { id: "notepad", name: "Notepad", icon: "notepad" },
+  { id: "onedrive", name: "OneDrive", icon: "onedrive" },
+  { id: "paint", name: "Paint", icon: "paint" },
+  { id: "weather", name: "날씨", icon: "weather" },
+  { id: "terminal", name: "Terminal", icon: "terminal" },
+  { id: "cortana", name: "Cortana", icon: "cortana" },
+  { id: "mail", name: "Mail", icon: "mail" },
+  { id: "camera", name: "Camera", icon: "camera" },
+  { id: "tips", name: "Tips", icon: "tips" },
+];
+
+export const recommended = [
+  { name: "Snipping Tool", icon: "snippingtool", sub: "최근 추가 항목" },
+  { name: "Cortana", icon: "cortana", sub: "최근 추가 항목" },
+  { name: "Task View", icon: "taskview", sub: "3시간 전" },
+  { name: "Voice Recorder", icon: "voice", sub: "21시간 전" },
+  { name: "Snip & Sketch", icon: "snipandsketch", sub: "21시간 전" },
+  { name: "Start", icon: "start", sub: "22시간 전" },
+];
+
+export const recommendedAll = [
+  { name: "task_view", path: "C:\\Users\\user\\Desktop\\WINDOWS\\windows11\\src\\assets\\icons", date: "2월 26일", icon: "taskview" },
+  { name: "Recording 2026-02-26 011131", path: "C:\\Users\\user\\Downloads", date: "2월 25일", icon: "voice" },
+  { name: "Screenshot 2026-02-26 010926", path: "C:\\Users\\user\\Pictures\\Screenshots", date: "2월 25일", icon: "photos" },
+  { name: "start", path: "C:\\사용자\\user\\바탕 화면\\WINDOWS\\windows11\\src\\assets\\icons", date: "2월 25일", icon: "start" },
+  { name: "search2", path: "C:\\Users\\user\\Downloads\\WindowsIcons-main\\WindowsIcons-main...", date: "2월 25일", icon: "photos" },
+  { name: "search", path: "C:\\Users\\user\\Downloads\\WindowsIcons-main\\WindowsIcons-main...", date: "2월 25일", icon: "photos" },
+  { name: "README", path: "C:\\Users\\user\\Downloads\\WindowsIcons-main", date: "2월 25일", icon: "notepad" },
+  { name: "search", path: "C:\\Users\\user\\Desktop\\WINDOWS\\windows11\\src\\assets\\icons", date: "2월 25일", icon: "photos" },
+  { name: "Screenshot 2026-02-25 224723", path: "C:\\Users\\user\\Pictures\\Screenshots", date: "2월 25일", icon: "photos" },
+  { name: "그림1", path: "C:\\Users\\user\\Desktop", date: "2월 25일", icon: "paint" },
+  { name: "Screenshot 2026-02-24 220229", path: "C:\\Users\\user\\Pictures\\Screenshots", date: "2월 24일", icon: "photos" },
+  { name: "#5325", path: "C:\\사용자\\user\\다운로드\\W11_icon_files\\imageres-icons", date: "2월 24일", icon: "photos" },
+  { name: "logo", path: "C:\\Users\\user\\Desktop\\WINDOWS\\windows11\\src\\assets\\icons", date: "2월 24일", icon: "photos" },
+  { name: "battery-report", path: "C:\\사용자\\user", date: "2월 22일", icon: "edge" },
+];
+
+export const appCategories = [
+  { name: "기타", icons: ["edge", "mail", "onenote", "outlook"] },
+  { name: "개발자 도구", icons: ["visualcode", "terminal", "notepad", "visualstudio"] },
+  { name: "유틸리티 및 도구", icons: ["snippingtool", "settings", "calculator", "tasks", "protection"] },
+  { name: "생산성", icons: ["onedrive", "stickynotes", "teams", "project", "excel", "word"] },
+  { name: "소셜", icons: ["skype", "cortana", "outlook", "teams"] },
+  { name: "독창성", icons: ["photos", "camera", "paint", "snipandsketch", "movies", "voice"] },
+  { name: "엔터테인먼트", icons: ["movies", "groove", "edge", "solitaire"] },
+  { name: "게임", icons: ["solitaire", "gamebar", "store", "tips", "alarm", "maps"] },
+];

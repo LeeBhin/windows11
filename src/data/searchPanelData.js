@@ -1,6 +1,10 @@
 export const recentApps = [
   { id: "weather", name: "날씨", icon: "weather" },
   { id: "skype", name: "Skype", icon: "skype" },
+  { id: "notepad", name: "메모장", icon: "notepad" },
+  { id: "calculator", name: "계산기", icon: "calculator" },
+  { id: "photos", name: "사진", icon: "photos" },
+  { id: "outlook", name: "Outlook", icon: "outlook" },
 ];
 
 export const quickTags = [

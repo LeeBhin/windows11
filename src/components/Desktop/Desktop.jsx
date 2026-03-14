@@ -67,6 +67,7 @@ export default function Desktop() {
     const dy = y - dragStart.current.y
 
     if (!isDragging.current && Math.abs(dx) < 4 && Math.abs(dy) < 4) return
+    if (!isDragging.current) selectIcon(null)
     isDragging.current = true
 
     const rect = getSelectionRect(dragStart.current.x, dragStart.current.y, x, y)
@@ -74,7 +75,7 @@ export default function Desktop() {
 
     const hits = getIntersectingIcons(rect)
     setTempSelectedIconIds(hits)
-  }, [getSelectionRect, getIntersectingIcons, setTempSelectedIconIds])
+  }, [getSelectionRect, getIntersectingIcons, setTempSelectedIconIds, selectIcon])
 
   const handleMouseUp = useCallback(() => {
     if (isDragging.current) {

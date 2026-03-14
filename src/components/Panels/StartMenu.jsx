@@ -4,6 +4,7 @@ import { ChevronUp, ChevronDown, ChevronRight, ChevronLeft, Check, UserRound, Ro
 import { useDesktopStore } from "../../store/useDesktopStore";
 import SearchInput from "./SearchInput";
 import PanelShell from "../ui/PanelShell";
+import Hoverable from "../ui/Hoverable";
 import { pinnedApps, recommended, recommendedAll, appCategories } from "../../data/startMenuData";
 
 const viewModes = ["범주", "그리드", "간단히"];
@@ -174,22 +175,26 @@ export default function StartMenu() {
                 <span className="text-[14px] font-semibold text-gray-800">
                   고정됨
                 </span>
-                <button
+                <Hoverable
+                  as="button"
+                  type="text"
                   onClick={() => setPinnedExpanded((v) => !v)}
-                  className="text-[14px] text-gray-800 px-3 py-1.5 mr-[-12px] rounded-[4px] hover:bg-[#ffffffa6] active:opacity-60 transition-all duration-[120ms] flex items-center gap-1"
+                  className="text-[14px] text-gray-800 px-3 py-1.5 mr-[-12px] flex items-center gap-1"
                 >
                   {pinnedExpanded ? "간단히 표시" : "모두 표시"}
                   {pinnedExpanded ? <ChevronUp size={14} strokeWidth={1.5} /> : <ChevronDown size={14} strokeWidth={1.5} />}
-                </button>
+                </Hoverable>
               </div>
               <div
                 className="grid grid-cols-8 gap-y-1"
                 style={{ margin: '0 calc(15px - 100% / 16)' }}
               >
                 {pinnedApps.slice(0, pinnedExpanded ? 24 : 16).map((app) => (
-                  <button
+                  <Hoverable
+                    as="button"
                     key={app.id}
-                    className="flex flex-col items-center gap-[2px] pt-3 rounded-sm transition-colors hover:bg-[#ffffffa6] active:bg-[#ffffff50]"
+                    className="flex flex-col items-center gap-[2px] pt-3 rounded-sm"
+                    type="icon"
                   >
                     <img src={appIcon(app.icon)} className="w-[30px] h-[30px] object-contain" alt={app.name} />
                     <span
@@ -205,7 +210,7 @@ export default function StartMenu() {
                     >
                       {app.name}
                     </span>
-                  </button>
+                  </Hoverable>
                 ))}
               </div>
             </div>
@@ -216,19 +221,22 @@ export default function StartMenu() {
                 <span className="text-[14px] font-semibold text-gray-800">
                   맞춤
                 </span>
-                <button
+                <Hoverable
+                  as="button"
+                  type="text"
                   onClick={() => setRecommendedExpanded(true)}
-                  className="text-[14px] text-gray-800 px-3 py-1.5 mr-[-12px] rounded-[4px] hover:bg-[#ffffffa6] active:opacity-60 transition-all duration-[120ms] flex items-center gap-1"
+                  className="text-[14px] text-gray-800 px-3 py-1.5 mr-[-12px] flex items-center gap-1"
                 >
                   모두 표시
                   <ChevronRight size={14} strokeWidth={1.5} />
-                </button>
+                </Hoverable>
               </div>
               <div className="grid grid-cols-3 gap-x-1 gap-x-4 -mx-3">
                 {recommended.map((item) => (
-                  <button
+                  <Hoverable
+                    as="button"
                     key={item.name}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[4px] hover:bg-[#ffffffa6] active:bg-[#ffffff60] transition-all duration-[120ms] text-left"
+                    className="flex items-center gap-3 px-3 py-2 text-left"
                   >
                     <img src={appIcon(item.icon)} className="w-[23px] h-[23px] object-contain flex-shrink-0" alt={item.name} />
                     <div className="min-w-0">
@@ -239,7 +247,7 @@ export default function StartMenu() {
                         {item.sub}
                       </p>
                     </div>
-                  </button>
+                  </Hoverable>
                 ))}
               </div>
             </div>
@@ -251,13 +259,15 @@ export default function StartMenu() {
                   모두
                 </span>
                 <div className="relative mr-[-12px]" ref={viewBtnRef}>
-                  <button
+                  <Hoverable
+                    as="button"
+                    type="text"
                     onClick={() => setViewDropdown((v) => !v)}
-                    className="text-[14px] text-gray-800 px-3 py-1.5 rounded-[4px] hover:bg-[#ffffffa6] active:opacity-60 transition-all duration-[120ms] flex items-center gap-1"
+                    className="text-[14px] text-gray-800 px-3 py-1.5 flex items-center gap-1"
                   >
                     보기: {viewMode}
                     {viewDropdown ? <ChevronUp size={14} strokeWidth={2.2} /> : <ChevronDown size={14} strokeWidth={2.2} />}
-                  </button>
+                  </Hoverable>
                   {viewDropdown && (
                     <div
                       className="absolute left-1/2 -translate-x-1/2 mt-1 rounded-md z-10"
@@ -308,27 +318,27 @@ export default function StartMenu() {
                       {cat.icons.length <= 4
                         ? cat.icons.map((icon, i) => (
                           <div key={i} className="flex items-center justify-center">
-                            <button className="group p-3.5 rounded-[4px] hover:bg-[#ffffffa6] active:bg-[#ffffff50] transition-all duration-[120ms]">
+                            <Hoverable as="button" type="icon" className="group p-3.5">
                               <img src={appIcon(icon)} className="w-[32px] h-[32px] object-contain group-active:scale-[0.8] transition-transform duration-[120ms]" alt="" />
-                            </button>
+                            </Hoverable>
                           </div>
                         ))
                         : <>
                           {cat.icons.slice(0, 3).map((icon, i) => (
                             <div key={i} className="flex items-center justify-center">
-                              <button className="group p-3.5 rounded-[4px] hover:bg-[#ffffffa6] active:bg-[#ffffff50] transition-all duration-[120ms]">
+                              <Hoverable as="button" type="icon" className="group p-3.5">
                                 <img src={appIcon(icon)} className="w-[32px] h-[32px] object-contain group-active:scale-[0.8] transition-transform duration-[120ms]" alt="" />
-                              </button>
+                              </Hoverable>
                             </div>
                           ))}
                           <div className="flex items-center justify-center">
-                            <button className="group p-3.5 rounded-[4px] hover:bg-[#ffffffa6] active:bg-[#ffffff50] transition-all duration-[120ms]">
+                            <Hoverable as="button" type="icon" className="group p-3.5">
                               <div className="w-[32px] h-[32px] grid grid-cols-2 gap-[2px] place-items-center group-active:scale-[0.8] transition-transform duration-[120ms]">
                                 {cat.icons.slice(3, 7).map((icon, i) => (
                                   <img key={i} src={appIcon(icon)} className="w-[14px] h-[14px] object-contain" alt="" />
                                 ))}
                               </div>
-                            </button>
+                            </Hoverable>
                           </div>
                         </>
                       }
@@ -354,19 +364,22 @@ export default function StartMenu() {
               <span className="text-[14px] font-semibold text-gray-800">
                 맞춤
               </span>
-              <button
+              <Hoverable
+                as="button"
+                type="text"
                 onClick={() => setRecommendedExpanded(false)}
-                className="text-[14px] text-gray-800 px-3 py-1.5 mr-[-4px] rounded-[4px] hover:bg-[#ffffffa6] active:opacity-60 transition-all duration-[120ms] flex items-center gap-1"
+                className="text-[14px] text-gray-800 px-3 py-1.5 mr-[-4px] flex items-center gap-1"
               >
                 <ChevronLeft size={14} strokeWidth={1.5} />
                 뒤로
-              </button>
+              </Hoverable>
             </div>
             <div className="flex flex-col">
               {recommendedAll.map((item, i) => (
-                <button
+                <Hoverable
+                  as="button"
                   key={i}
-                  className="flex items-center gap-4 px-3 py-1.5 rounded-[4px] hover:bg-[#ffffffa6] active:bg-[#ffffff60] transition-all duration-[120ms] text-left"
+                  className="flex items-center gap-4 px-3 py-1.5 text-left"
                 >
                   <img src={appIcon(item.icon)} className="w-[20px] h-[20px] object-contain flex-shrink-0" alt={item.name} />
                   <div className="min-w-0 flex-1">
@@ -380,7 +393,7 @@ export default function StartMenu() {
                   <span className="text-[11px] text-gray-400 flex-shrink-0 ml-2">
                     {item.date}
                   </span>
-                </button>
+                </Hoverable>
               ))}
             </div>
           </div>
@@ -396,19 +409,21 @@ export default function StartMenu() {
           borderTop: "1px solid rgba(0,0,0,0.05)",
         }}
       >
-        <button className="group flex items-center gap-2.5 px-3 py-1 rounded-[4px] hover:bg-[#ffffffa6] transition-all duration-[120ms]">
+        <Hoverable as="button" type="none" className="group flex items-center gap-2.5 px-3 py-1">
           <div className="w-[33px] h-[33px] border 1px border-[#dadada] rounded-full bg-[#E6E6E6] flex items-center justify-center">
             <UserRound size={20} stroke="rgba(60,60,60,0.65)" strokeWidth={1.8} />
           </div>
           <span className="text-[12px] text-gray-700 font-medium group-active:opacity-60 transition-opacity duration-[120ms]">이빈</span>
-        </button>
+        </Hoverable>
         <div className="relative" ref={powerBtnRef}>
-          <button
+          <Hoverable
+            as="button"
             onClick={() => setPowerDropdown((v) => !v)}
-            className="flex items-center justify-center w-9 h-9 rounded-[4px] hover:bg-[#ffffffa6] active:opacity-60 transition-all duration-[120ms]"
+            type="text"
+            className="flex items-center justify-center w-9 h-9"
           >
             <Power size={20} strokeWidth={1} color="black" />
-          </button>
+          </Hoverable>
           {powerDropdown && (
             <div
               className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 rounded-md z-10"
